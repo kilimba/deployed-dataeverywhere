@@ -69,8 +69,12 @@ ui <- dashboardPage(
     tags$br(),
     #     uiOutput("choose_round"),
     conditionalPanel(
-      condition = "input.tabs != 'dashboard' & input.tabs != 'typeC' & input.tabs != 'charts'",
+      condition = "input.tabs != 'dashboard' & input.tabs != 'typeC' & input.tabs != 'typeB' & input.tabs != 'charts'",
       uiOutput("choose_week")
+    ),
+    conditionalPanel(
+      condition = "input.tabs == 'typeB'",
+      uiOutput("choose_weekind")
     )
     
   ),
@@ -383,7 +387,7 @@ server <- function(input, output, session) {
               incProgress(3/n, detail = paste("LOADING DATA... 30%"))
               roundData <- getRoundData(subset(dsDSRoundA,dsDSRoundA$Name==input$roundhouse)["ExtID"],sharedValues$data)
               incProgress(3/n, detail = paste("LOADING DATA... 60%"))
-              weekData <- getRoundDataPerWeek(roundData, week)
+              weekData <- getRoundDataPerWeek(roundData, week,min(getWeeks()))
               incProgress(3/n, detail = paste("DATA LOADED... 100%"))         
               
             })
@@ -409,7 +413,9 @@ server <- function(input, output, session) {
             }) 
             
             output$captionhh <- renderText({
-              return(paste("You are currently viewing progress gauges for HOUSEHOLD level data operations activities in the current round for week",week))
+              return(paste("You are currently viewing cumulative progress gauges for HOUSEHOLD 
+                           level data operations activities in the current round from week",
+                           min(getWeeks()),"to week",week))
             })
             
           }else{
@@ -429,17 +435,18 @@ server <- function(input, output, session) {
         selectInput("roundindividual", "Select Round", roundsB)
       })
       
-      output$choose_week <- renderUI({
-        selectInput("week", "Select Week", getIndWeeks(),width = '90%')
+      output$choose_weekind <- renderUI({
+        selectInput("weekind", "Select Week", getIndWeeks(),width = '90%')
       })
       
       observe({        
         if(!is.null(input$roundindividual)){
+          
           indData <- getIndividualRoundData(input$roundindividual,sharedValues$data)
           
           
-          if(!is.null(input$week)){
-            week = input$week
+          if(!is.null(input$weekind)){
+            week = input$weekind
             
             withProgress(message = 'LOADING DATA...', value = 0, {
               
@@ -449,7 +456,7 @@ server <- function(input, output, session) {
               incProgress(3/n, detail = paste("LOADING DATA... 30%"))
               #indData <- getIndividualRoundData(input$roundindividual,sharedValues$data)
               incProgress(3/n, detail = paste("LOADING DATA... 60%"))
-              weekData <- getRoundDataPerWeek(indData, input$week)
+              weekData <- getRoundDataPerWeek(indData, week,min(getIndWeeks()))
               incProgress(3/n, detail = paste("DATA LOADED... 100%"))         
               
             })
@@ -478,7 +485,9 @@ server <- function(input, output, session) {
             })    
             
             output$captionind <- renderText({
-              return(paste("You are currently viewing progress gauges for INDIVIDUAL level data operations activities in the current round for week",week))
+              return(paste("You are currently viewing cumulative progress gauges for INDIVIDUAL 
+                           level data operations activities in the current round from week",
+                           min(getIndWeeks()),"to week",week))
             })
             
           }

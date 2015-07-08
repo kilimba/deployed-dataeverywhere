@@ -190,8 +190,10 @@ getWeeks <- function(){
   return(weeks)
 }
 
-getRoundDataPerWeek <- function(data,week){
-  weekdata <- subset(data, data$Week == week)
+getRoundDataPerWeek <- function(data,week,weekMin){
+  min <- as.numeric(weekMin)
+  selected <- as.numeric(week) 
+  weekdata <- subset(data, data$Week %in% min:selected)
   return(weekdata)
 }
 
