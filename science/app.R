@@ -404,7 +404,7 @@ server <- function(input, output) {
       outcome_data <- reactive({
         read.csv((as.character(selected_indicator$file)))
       })
-      browser()
+      
       output$choose_agegrp <- renderUI({
         selectInput("agegrp", "Select Age Group", 
                     choices = as.vector(unique(d()[,"agegrp"])), selected="00-04",width="95%")
