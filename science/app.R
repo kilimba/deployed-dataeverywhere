@@ -390,13 +390,8 @@ server <- function(input, output) {
     selectInput("outcome", "Select Outcome", choices, selected="Population Structure",width="95%")
   })
   
-  output$choose_agegrp <- renderUI({
-    selectInput("agegrp", "Select Age Group", 
-                choices = c("00-04","05-09","10-14","15-19","20-24","25-29",
-                            "30-34","35-39","40-44","45-49","50-54",
-                            "55-59","60-64","65-69","70-74","75-79",
-                            "80-84","85+"), selected="00-04",width="95%")
-  })
+    
+  
   #############################################################
   # PYRAMID
   #############################################################
@@ -408,6 +403,11 @@ server <- function(input, output) {
       
       outcome_data <- reactive({
         read.csv((as.character(selected_indicator$file)))
+      })
+      browser()
+      output$choose_agegrp <- renderUI({
+        selectInput("agegrp", "Select Age Group", 
+                    choices = as.vector(unique(d()[,"agegrp"])), selected="00-04",width="95%")
       })
       
       d <- reactive({outcome_data()})
